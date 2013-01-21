@@ -21,7 +21,7 @@ constexpr static unsigned long long hash_ct(const char* str)
 }
 
 // run-time hash
-static  unsigned long long hash_rt(const char* str)
+static unsigned long long hash_rt(const char* str)
 {
     unsigned long long hash = basis;
     while (*str != 0) {

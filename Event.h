@@ -52,9 +52,9 @@ public:
 // Public interface
 //---------------------------------------------------------
     BaseEvent(
-    	const string &typeString,
-    	const time_t timestamp
-    	)
+        const string &typeString,
+        const time_t timestamp
+        )
     : typeString(typeString)
     , timestamp(timestamp) {}
     virtual ~BaseEvent() {}
@@ -64,10 +64,10 @@ public:
     }
 
     string getTimestampString() const {
-    	auto timeinfo = localtime(&timestamp);
-    	// Remove '\n' from the end of the string
-		string temp = asctime(timeinfo);
-		return temp.substr(0, temp.size() - 1);
+        auto timeinfo = localtime(&timestamp);
+        // Remove '\n' from the end of the string
+        string temp = asctime(timeinfo);
+        return temp.substr(0, temp.size() - 1);
     }
 
     EventType getType() const { 
@@ -80,6 +80,6 @@ public:
  **********************************************************/
 #define EVENT_DEF(__s__) struct __s__ : public BaseEvent<hash_ct(#__s__)>
 #define EVENT_DEF_CTOR(__s__, ...) __s__(__VA_ARGS__): BaseEvent(#__s__, time(NULL))
-#define EVENT_LISTENER(s, u)	[](const std::shared_ptr<s> u) -> bool
+#define EVENT_LISTENER(s, u)    [](const std::shared_ptr<s> u) -> bool
 
 #endif

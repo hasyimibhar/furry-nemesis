@@ -24,7 +24,7 @@ using namespace std;
  **********************************************************/
 class IEventObserver {
 public:
-	virtual ~IEventObserver() {}
+    virtual ~IEventObserver() {}
 };
 
 /**********************************************************
@@ -35,76 +35,76 @@ public:
  **********************************************************/
 class EventDispatcher {
 public:
-	typedef shared_ptr<IEventObserver> EventObserverPtr;
-	template <typename T> using ListenerFunction = function<bool(const shared_ptr<T>)>;
+    typedef shared_ptr<IEventObserver> EventObserverPtr;
+    template <typename T> using ListenerFunction = function<bool(const shared_ptr<T>)>;
 
 //---------------------------------------------------------
 // Public interface
 //---------------------------------------------------------
-													EventDispatcher();
-													~EventDispatcher();
+                                                    EventDispatcher();
+                                                    ~EventDispatcher();
 
-	template <typename T> unsigned int 				addAnonymousListener(ListenerFunction<T> listener);
-	template <typename U, typename T> void 			addObjectListener(
-														shared_ptr<U> observer,
-														bool (U::*listener)(const shared_ptr<T>));
+    template <typename T> unsigned int              addAnonymousListener(ListenerFunction<T> listener);
+    template <typename U, typename T> void          addObjectListener(
+                                                        shared_ptr<U> observer,
+                                                        bool (U::*listener)(const shared_ptr<T>));
 
-	template <typename T, typename ...Args> void 	triggerEvent(Args&& ...args) const;
-	template <typename T, typename ...Args> void 	queueEvent(const float delay, Args&& ...args);
-	void 											update(float dt);
+    template <typename T, typename ...Args> void    triggerEvent(Args&& ...args) const;
+    template <typename T, typename ...Args> void    queueEvent(const float delay, Args&& ...args);
+    void                                            update(float dt);
 
-	void 											removeAnonymousListener(const unsigned int id);
-	template <typename T> void 						removeObjectListener(const EventObserverPtr observer);
+    void                                            removeAnonymousListener(const unsigned int id);
+    template <typename T> void                      removeObjectListener(const EventObserverPtr observer);
 
 private:
-	class ListenerConcept;
-	template <class T> class Listener;
+    class ListenerConcept;
+    template <class T> class Listener;
 
 //---------------------------------------------------------
 // Internal variables
 //---------------------------------------------------------
-	unsigned int 									nextListenerId = 0;
-	vector<shared_ptr<ListenerConcept>> 			anonymousListenerArray;
-	map<EventType, 
-		list<shared_ptr<ListenerConcept>>> 			anonymousListenerMap;
-	map<EventObserverPtr, 
-		list<shared_ptr<ListenerConcept>>> 			objectListenerMap;
-	list<pair<EventPtr, float>> 					eventQueue;
+    unsigned int                                    nextListenerId = 0;
+    vector<shared_ptr<ListenerConcept>>             anonymousListenerArray;
+    map<EventType, 
+        list<shared_ptr<ListenerConcept>>>          anonymousListenerMap;
+    map<EventObserverPtr, 
+        list<shared_ptr<ListenerConcept>>>          objectListenerMap;
+    list<pair<EventPtr, float>>                     eventQueue;
 
 //---------------------------------------------------------
 // Internal methods
 //---------------------------------------------------------
-	unsigned int getListenerId();
+    unsigned int getListenerId();
 
 //---------------------------------------------------------
 // Internal classes
 //---------------------------------------------------------
-	struct ListenerConcept {
-	public:
-		virtual ~ListenerConcept() {}
-		virtual EventType getType() const = 0;
-		virtual bool operator()(const EventPtr event) = 0;
-	};
+    struct ListenerConcept {
+    public:
+        virtual ~ListenerConcept() {}
+        virtual EventType getType() const = 0;
+        virtual bool operator()(const EventPtr event) = 0;
+    };
 
-	template <typename T>
-	struct Listener : public ListenerConcept {
-		Listener(const function<bool(const shared_ptr<T>)> func)
-		: func(func)
-		, type(T::GetType()) {}
-		virtual ~Listener() {}
+    template <typename T>
+    struct Listener : public ListenerConcept {
+        Listener(const function<bool(const shared_ptr<T>)> func)
+        : func(func)
+        , type(T::GetType()) {}
+        virtual ~Listener() {}
 
-		EventType getType() const {
-			return type;
-		}
+        EventType getType() const {
+            return type;
+        }
 
-		bool operator()(const EventPtr event) {
-			return func(static_pointer_cast<T>(event));
-		}
+        bool operator()(const EventPtr event) {
+            return func(static_pointer_cast<T>(event));
+        }
 
-	private:
-		EventType type;
-		function<bool(const shared_ptr<T>)> func;
-	};
+    private:
+        EventType type;
+        function<bool(const shared_ptr<T>)> func;
+    };
 };
 
 /**********************************************************
